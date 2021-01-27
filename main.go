@@ -29,7 +29,7 @@ func init() {
 }
 
 func printUsage() {
-	fmt.Println("Usage: ./gpg-brute-go -w words.txt [-c] 8 key1.asc key2.asc ")
+	fmt.Println("Usage: ./gpg-brute-go -w words.txt [-c] 8 key1.asc key2.asc")
 	os.Exit(1)
 }
 
