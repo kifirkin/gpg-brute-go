@@ -97,6 +97,8 @@ func main() {
 		log.Fatalln("Error reading wordlist file: ", err)
 	}
 
+	earlyBreak := false
+
 	semaphore := make(chan struct{}, *concurrency)
 	exit := make(chan os.Signal, 1)
 	end := make(chan struct{}, 1)
@@ -108,8 +110,9 @@ func main() {
 
 	go func() {
 		<-exit
-		fmt.Println("Exiting...")
-		os.Exit(0)
+		earlyBreak = true
+		done <- struct{}{}
+		end <- struct{}{}
 	}()
 
 	start := time.Now()
@@ -141,7 +144,7 @@ MainLoop:
 		semaphore <- struct{}{}
 	}
 
-	fmt.Println("Work done!")
+	fmt.Println("\nWork done!")
 
 	select {
 	case found := <-result:
@@ -152,6 +155,9 @@ MainLoop:
 
 	fmt.Println("Time took: ", time.Since(start))
 
-	fmt.Println("Press ctrl+c to exit.")
+	if !earlyBreak {
+		fmt.Println("Press ctrl+c to exit.")
+	}
+
 	<-end
 }
